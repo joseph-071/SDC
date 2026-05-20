@@ -14,4 +14,14 @@ both this file and the sub-project's CLAUDE.md together.
 ## Notes
 
 - Each sub-project is an independent git repository and is not tracked by this workspace repo.
-- When adding a new project: create a `CLAUDE.md` inside the new directory, then update the table above.
+
+## Workflow: Adding a New Project
+
+When setting up a new sub-project under this workspace, always follow these steps:
+
+1. Create the project directory under `full-SDC/`
+2. Inside the new directory, run `git init` and create a `CLAUDE.md` with project-specific details
+3. Add the directory name to `full-SDC/.gitignore`
+4. Add a row to the Sub-projects table above (name, directory path, GitHub link)
+5. Update `full-SDC/README.md` with the new project entry
+6. Commit the `.gitignore` and `CLAUDE.md` updates in the workspace repo (`full-SDC/`)
