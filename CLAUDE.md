@@ -1,85 +1,17 @@
-# CLAUDE.md
+# CLAUDE.md — full-SDC Workspace
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+This file provides workspace-level guidance to Claude Code (claude.ai/code).
+Each sub-project has its own CLAUDE.md with project-specific details.
+When working inside a sub-project directory, Claude Code automatically loads
+both this file and the sub-project's CLAUDE.md together.
 
-## Project Overview
+## Sub-projects
 
-This is a FastAPI backend for a "Digital Note" / Personal Cloud Notebook application. It exposes a REST API for CRUD operations on notes, backed by PostgreSQL, and is fully containerised with Docker Compose.
+| Project | Directory | GitHub |
+|---------|-----------|--------|
+| full-stack-intro-backend | `./full-stack-intro-backend/` | https://github.com/joseph-071/full-stack-intro-backend |
 
-## Running the Stack
+## Notes
 
-The recommended way to run everything is via Docker Compose from `full-stack-intro-backend/`:
-
-```bash
-cd full-stack-intro-backend
-docker compose up --build        # start all services (backend + postgres + pgadmin)
-docker compose up --build -d     # same, detached
-docker compose down              # stop and remove containers
-docker compose logs -f backend   # tail backend logs
-```
-
-Services exposed:
-- `http://localhost:8000` — FastAPI app (auto-reload enabled)
-- `http://localhost:8000/docs` — Swagger UI
-- `http://localhost:5050` — pgAdmin (admin@example.com / password123)
-- `localhost:5432` — PostgreSQL
-
-**Local dev (no Docker):** copy `.env.example` to `.env`, point `DATABASE_URL` at a local Postgres instance, then:
-
-```bash
-pip install -r requirements.txt
-uvicorn src.main:app --reload
-```
-
-## Architecture
-
-```
-src/
-  main.py               # FastAPI app, CORS, static files mount, startup DB init, router registration
-  config/
-    database.py         # SQLAlchemy engine, SessionLocal, Base, get_db() dependency
-  models/
-    user.py             # User ORM model  (users table)
-    note.py             # Note ORM model  (notes table, FK → users)
-  schemas/
-    note.py             # Pydantic schemas: NoteCreate, NoteRead, NoteUpdate, NoteListResponse
-  routes/
-    notes.py            # HTTP layer — OAuth dependency, thin handlers, delegates to services
-  services/
-    note_service.py     # Business logic and DB queries; raises HTTPException on 404/400
-  static/
-    index.html          # Single-page frontend, served at GET /
-    app.js              # Fetch-based CRUD client; stores OAuth token in localStorage
-    styles.css          # App layout and component styles
-```
-
-### Key design conventions
-
-- **Routers are thin**: route handlers only parse HTTP inputs and call service functions.
-- **Services own logic**: all DB queries and business rules live in `note_service.py`.
-- **Authentication**: all note endpoints use `get_current_user_id` (in `routes/notes.py`) as a FastAPI dependency. Requests are authenticated via `Authorization: Bearer <token>`; the legacy `?user_id=<int>` query param is accepted as a fallback. Missing both returns `401`. Demo OAuth token formats: `user:<id>` (direct) or `<provider>:user:<id>` (Google / GitHub). A provider-scoped token auto-creates the user in the DB via `ensure_oauth_user` if they don't exist yet.
-- **SQLAlchemy sessions** are injected via `Depends(get_db)` and closed automatically.
-- **Pydantic v2** is in use (`model_config = ConfigDict(from_attributes=True)`, `model_dump(exclude_unset=True)`).
-
-### Database schema
-
-| Table   | Key columns |
-|---------|-------------|
-| `users` | `user_id` (PK), `user_name`, `user_email` (unique) |
-| `notes` | `note_id` (PK), `user_id` (FK → users, CASCADE), `title`, `content`, `note_date` |
-
-Tables are **auto-created** on application startup via `Base.metadata.create_all` called in the `on_startup` event handler in `main.py`.
-
-## API Endpoints
-
-All note endpoints require authentication — either `Authorization: Bearer <token>` header or `?user_id=<int>` (legacy). Returns `401` if neither is provided, `404` if the user doesn't exist.
-
-| Method | Path | Description |
-|--------|------|-------------|
-| GET | `/` | Serve frontend index.html |
-| GET | `/health` | Status check |
-| POST | `/notes` | Create note |
-| GET | `/notes` | List user's notes (desc order) |
-| GET | `/notes/{note_id}` | Get single note |
-| PATCH | `/notes/{note_id}` | Partial update (only provided fields) |
-| DELETE | `/notes/{note_id}` | Delete note (204) |
+- Each sub-project is an independent git repository and is not tracked by this workspace repo.
+- When adding a new project: create a `CLAUDE.md` inside the new directory, then update the table above.
