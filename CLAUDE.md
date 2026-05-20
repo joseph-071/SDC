@@ -21,7 +21,9 @@ When setting up a new sub-project under this workspace, always follow these step
 
 1. Create the project directory under `full-SDC/`
 2. Inside the new directory, run `git init` and create a `CLAUDE.md` with project-specific details
-3. Add the directory name to `full-SDC/.gitignore`
-4. Add a row to the Sub-projects table above (name, directory path, GitHub link)
-5. Update `full-SDC/README.md` with the new project entry
-6. Commit the `.gitignore` and `CLAUDE.md` updates in the workspace repo (`full-SDC/`)
+3. Create a `README.md` inside the new directory
+4. Commit and push `CLAUDE.md` and `README.md` to the sub-project's own GitHub repo
+5. Add the directory name to `full-SDC/.gitignore`
+6. Add a row to the Sub-projects table above (name, directory path, GitHub link)
+7. Update `full-SDC/README.md` with the new project entry
+8. Commit and push the workspace repo (`full-SDC/`) changes
